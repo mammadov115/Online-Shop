@@ -1,8 +1,9 @@
-from django.shortcuts import render
+from django.shortcuts import render,redirect
 from .models import OrderItem
 from .forms import OrderCreateForm
 from cart.cart import Cart
 from .tasks import order_created
+from django.urls import reverse
 # Create your views here.
 
 def order_create(request):
@@ -15,12 +16,8 @@ def order_create(request):
                 OrderItem.objects.create(order=order,product=item['product'],price=item['price'],quantity=item['quantity'])
             cart.clear()
             order_created.delay(order.id)
-            
-            context = {
-                'order': order
-            }
-
-            return render(request,'orders/order/created.html', context)
+            request.session['order-id'] = order.id
+            return redirect(reverse('payment:process'))
     else:
         form = OrderCreateForm()
 
