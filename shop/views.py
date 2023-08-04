@@ -16,7 +16,6 @@ def product_list(request,category_slug=None):
 		'categories': categories,
 		'products': products
 	}
-	print(15, sep=' ', end='\n', file=sys.stdout)
 
 	return render(request,'shop/product/list.html',context)
 
