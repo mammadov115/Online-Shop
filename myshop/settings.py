@@ -8,6 +8,15 @@ https://docs.djangoproject.com/en/4.2/topics/settings/
 
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
+
+This file contains all configuration settings for the project including:
+- Installed apps
+- Middleware
+- Database
+- Templates
+- Static & Media files
+- Email, Stripe, Redis, and Celery integrations
+- Multilingual support (Django Parler)
 """
 
 from pathlib import Path
@@ -15,48 +24,49 @@ import os
 from dotenv import load_dotenv
 from django.utils.translation import gettext_lazy as _
 
+# Load environment variables from .env file
 load_dotenv()
 
-
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
+# Base directory for the project
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
-
-# SECURITY WARNING: keep the secret key used in production secret!
+# SECURITY SETTINGS
 SECRET_KEY = 'django-insecure-)*)douozkwzw3myhm17+ol8qi59s&5$&i)6_sgq08k$yd5-qoy'
-
-# SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
-
 ALLOWED_HOSTS = []
 
-
-# Application definition
-
+# -----------------------------
+# APPLICATIONS
+# -----------------------------
 INSTALLED_APPS = [
+    # Default Django apps
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
+    # Project apps
     'shop.apps.ShopConfig',
     'cart.apps.CartConfig',
     'orders.apps.OrdersConfig',
     'payment.apps.PaymentConfig',
     'coupons.apps.CouponsConfig',
-    'rosetta',
-    'parler',
-    'localflavor'
+
+    # Third-party apps
+    'rosetta',       # Translation interface
+    'parler',        # Multilingual support
+    'localflavor',   # Country/region-specific form fields
 ]
 
+# -----------------------------
+# MIDDLEWARE
+# -----------------------------
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.locale.LocaleMiddleware',
+    'django.middleware.locale.LocaleMiddleware',  # For multilingual support
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -66,10 +76,13 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'myshop.urls'
 
+# -----------------------------
+# TEMPLATES
+# -----------------------------
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [],  # Custom template directories can be added here
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -77,7 +90,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-                'cart.context_processors.cart'
+                'cart.context_processors.cart',  # Add cart info globally
             ],
         },
     },
@@ -85,93 +98,86 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'myshop.wsgi.application'
 
-
-# Database
-# https://docs.djangoproject.com/en/4.2/ref/settings/#databases
-
+# -----------------------------
+# DATABASE
+# -----------------------------
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
+        'ENGINE': 'django.db.backends.sqlite3',  # Use PostgreSQL/MySQL in production
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
 
-
-# Password validation
-# https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
-
+# -----------------------------
+# PASSWORD VALIDATORS
+# -----------------------------
 AUTH_PASSWORD_VALIDATORS = [
-    {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
-    },
+    {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
 ]
 
-
-# Internationalization
-# https://docs.djangoproject.com/en/4.2/topics/i18n/
-
+# -----------------------------
+# INTERNATIONALIZATION
+# -----------------------------
 LANGUAGE_CODE = 'en-us'
 
 LANGUAGES = [
     ('en', _('English')),
-    ('az', _('Azerbaijan'))
+    ('az', _('Azerbaijan')),
 ]
 
-LOCALE_PATHS = [
-    BASE_DIR / 'locale'
-]
-
+LOCALE_PATHS = [BASE_DIR / 'locale']
 
 TIME_ZONE = 'UTC'
-
 USE_I18N = True
-
 USE_L10N = True
-
 USE_TZ = True
 
-
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/4.2/howto/static-files/
-
+# -----------------------------
+# STATIC & MEDIA FILES
+# -----------------------------
 STATIC_URL = 'static/'
 STATIC_ROOT = BASE_DIR / 'static'
-
-# Default primary key field type
-# https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
-
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 MEDIA_URL = 'media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
-# session settings
+# -----------------------------
+# DEFAULT PRIMARY KEY
+# -----------------------------
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# -----------------------------
+# SESSION SETTINGS
+# -----------------------------
 CART_SESSION_ID = 'cart'
 
-# email settings
+# -----------------------------
+# EMAIL SETTINGS
+# -----------------------------
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+# For production: use SMTP backend with credentials
 
-# stipe settings
+# -----------------------------
+# STRIPE SETTINGS
+# -----------------------------
 STRIPE_PUBLISHABLE_KEY = os.environ.get('STRIPE_PUBLISHABLE_KEY')
 STRIPE_SECRET_KEY = os.environ.get('STRIPE_SECRET_KEY')
 STRIPE_API_VERSION = os.environ.get('STRIPE_API_VERSION')
 STRIPE_WEBHOOK_SECRET = os.environ.get('STRIPE_WEBHOOK_SECRET')
 
-# Redis settings
+# -----------------------------
+# REDIS SETTINGS
+# -----------------------------
 REDIS_HOST = 'localhost'
 REDIS_PORT = 6379
 REDIS_DB = 1
 
-# Django Parler settings
+# -----------------------------
+# DJANGO PARLER (MULTILINGUAL) SETTINGS
+# -----------------------------
 PARLER_LANGUAGES = {
     None: (
         {'code': 'en'},
@@ -179,6 +185,4 @@ PARLER_LANGUAGES = {
     ),
     'default': {
         'fallback': 'en',
-        'hide_untranslated': False
-    }
-}
+        'hide_untranslated': Fal_
