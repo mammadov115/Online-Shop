@@ -4,7 +4,17 @@ from parler.models import TranslatableModel, TranslatedFields
 
 # Create your models here.
 
+# Models for multilingual product catalog (Category and Product)
+# The Category model supports translations using django-parler.
+
 class Category(TranslatableModel):
+    """
+    Represents a product category with multilingual support.
+    
+    Uses django-parler's TranslatableModel to store translations
+    for fields such as `name` and `slug`.
+    """
+    
     translations = TranslatedFields(
         name = models.CharField(max_length=200),
         slug = models.SlugField(max_length=200,unique=True)
@@ -20,13 +30,25 @@ class Category(TranslatableModel):
 
 
     def __str__(self):
+        """
+        Returns the string representation of the category.
+        """  
         return self.name
 
     def get_absolute_url(self):
+        """
+        Returns the URL to the list of products filtered by this category.
+        """
         return reverse('shop:product_list_by_category',args=[self.slug])
 
 
 class Product(models.Model):
+    """
+    Represents a single product in the catalog.
+
+    Each product belongs to a category and contains information such as
+    name, slug, image, description, price, and availability.
+    """
     category = models.ForeignKey(Category,related_name='products',on_delete=models.CASCADE)
     name = models.CharField(max_length=200)
     slug = models.SlugField(max_length=200)
@@ -46,7 +68,13 @@ class Product(models.Model):
         ]
     
     def __str__(self):
+        """
+        Returns the string representation of the product.
+        """
         return self.name
 
     def get_absolute_url(self):
+        """
+        Returns the URL to the product's detail page.
+        """
         return reverse('shop:product_detail',args=[self.id,self.slug])
